@@ -6,6 +6,7 @@ using Il2CppVertigo.AZS2.Client;
 using static MelonLoader.MelonLogger;
 using Il2CppVertigo.Interactables;
 using Il2CppVertigo;
+using Il2CppVertigo.VRShooter;
 
 [assembly: MelonInfo(typeof(ArizonaSunshine2_bhaptics.ArizonaSunshine2_bhaptics), "ArizonaSunshine2_bhaptics", "1.0.0", "Astien & Florian Fahrenberger")]
 [assembly: MelonGame("Vertigo Games", "ArizonaSunshine2")]
@@ -177,6 +178,25 @@ namespace ArizonaSunshine2_bhaptics
                     tactsuitVr.PlaybackHaptics("RecoilHands_L", 0.25f);
                     tactsuitVr.PlaybackHaptics("RecoilPistolVest_L", 0.25f);
                     tactsuitVr.PlaybackHaptics("RecoilArms_L", 0.25f);
+                }
+            }
+        }
+        
+        [HarmonyPatch(typeof(AmmoItemFeatureBehaviourData), "HandleOnGrabbedEvent")]
+        public class bhaptics_HandleOnGrabbedEvent
+        {
+            [HarmonyPostfix]
+            public static void Postfix(AmmoItemFeatureBehaviourData __instance, Hand hand)
+            {
+                if (hand.IsRightHand)
+                {
+                    tactsuitVr.PlaybackHaptics("GrabItemVestRight");
+                    tactsuitVr.PlaybackHaptics("GrabItemArmsRight");
+                }
+                else
+                {
+                    tactsuitVr.PlaybackHaptics("GrabItemVestLeft");
+                    tactsuitVr.PlaybackHaptics("GrabItemArmsLeft");
                 }
             }
         }
