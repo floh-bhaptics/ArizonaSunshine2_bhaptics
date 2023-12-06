@@ -5,6 +5,7 @@ using HarmonyLib;
 using Il2CppVertigo.AZS2.Client;
 using static MelonLoader.MelonLogger;
 using Il2CppVertigo.Interactables;
+using Il2CppVertigo;
 
 [assembly: MelonInfo(typeof(ArizonaSunshine2_bhaptics.ArizonaSunshine2_bhaptics), "ArizonaSunshine2_bhaptics", "1.0.0", "Astien & Florian Fahrenberger")]
 [assembly: MelonGame("Vertigo Games", "ArizonaSunshine2")]
@@ -83,6 +84,7 @@ namespace ArizonaSunshine2_bhaptics
                 Quaternion playerRotation = __instance.transformModule.ChestRotation;
                 var angleShift = getAngleAndShift(playerPosition, hitPosition, playerRotation);
                 tactsuitVr.PlayBackHit("Slash", angleShift.Key, angleShift.Value);
+                tactsuitVr.PlaybackHaptics("DamageVisor");
             }
         }
 
@@ -151,10 +153,30 @@ namespace ArizonaSunshine2_bhaptics
             [HarmonyPostfix]
             public static void Postfix(AmmoPouchResourceViewBehaviour __instance, uint resourceId, uint oldValue, uint newValue)
             {
-                tactsuitVr.LOG("RESSOURCE " + resourceId + " " + oldValue + " " + newValue);
                 if (oldValue != newValue)
                 {
                     tactsuitVr.PlaybackHaptics("HolsterInsertChest");
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(DogPetHandleBehaviour), "SetFullyAttached")]
+        public class bhaptics_PetDoggo
+        {
+            [HarmonyPostfix]
+            public static void Postfix(DogPetHandleBehaviour __instance, AZS2Hand hand)
+            {
+                if (hand.IsRightHand)
+                {
+                    tactsuitVr.PlaybackHaptics("RecoilHands_R", 0.25f);
+                    tactsuitVr.PlaybackHaptics("RecoilPistolVest_R", 0.25f);
+                    tactsuitVr.PlaybackHaptics("RecoilArms_R", 0.25f);
+                }
+                else
+                {
+                    tactsuitVr.PlaybackHaptics("RecoilHands_L", 0.25f);
+                    tactsuitVr.PlaybackHaptics("RecoilPistolVest_L", 0.25f);
+                    tactsuitVr.PlaybackHaptics("RecoilArms_L", 0.25f);
                 }
             }
         }
