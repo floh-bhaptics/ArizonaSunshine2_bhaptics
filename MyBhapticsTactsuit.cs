@@ -61,8 +61,8 @@ namespace MyBhapticsTactsuit
         {
             int res;
             res = BhapticsSDK2.Play(key.ToLower(), intensity, duration, xzAngle, yShift);
-            // LOG("Playing back: " + key);
-            //if (res > 0) LOG("Playback failed: " + key + " " + key.ToLower());
+            LOG("Playing back: " + key);
+            if (res > 0) LOG("Playback failed: " + key + " " + key.ToLower());
         }
 
 
