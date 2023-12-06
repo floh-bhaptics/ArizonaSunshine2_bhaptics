@@ -4,6 +4,7 @@ using UnityEngine;
 using HarmonyLib;
 using Il2CppVertigo.AZS2.Client;
 using static MelonLoader.MelonLogger;
+using Il2CppVertigo.Interactables;
 
 [assembly: MelonInfo(typeof(ArizonaSunshine2_bhaptics.ArizonaSunshine2_bhaptics), "ArizonaSunshine2_bhaptics", "1.0.0", "Astien & Florian Fahrenberger")]
 [assembly: MelonGame("Vertigo Games", "ArizonaSunshine2")]
@@ -14,6 +15,7 @@ namespace ArizonaSunshine2_bhaptics
     public class ArizonaSunshine2_bhaptics : MelonMod
     {
         public static TactsuitVR tactsuitVr = null!;
+        public static bool twoHanded = false;
 
         public override void OnInitializeMelon()
         {
@@ -21,12 +23,12 @@ namespace ArizonaSunshine2_bhaptics
             tactsuitVr.PlaybackHaptics("HeartBeat");
         }
 
-        private static KeyValuePair<float, float> getAngleAndShift(Transform player, Vector3 hit, Quaternion playerRotation)
+        private static KeyValuePair<float, float> getAngleAndShift(Vector3 playerPosition, Vector3 hit, Quaternion playerRotation)
         {
             // bhaptics pattern starts in the front, then rotates to the left. 0° is front, 90° is left, 270° is right.
             // y is "up", z is "forward" in local coordinates
             Vector3 patternOrigin = new Vector3(0f, 0f, 1f);
-            Vector3 hitPosition = hit - player.position;
+            Vector3 hitPosition = hit - playerPosition;
             Quaternion myPlayerRotation = playerRotation;
             Vector3 playerDir = myPlayerRotation.eulerAngles;
             // get rid of the up/down component to analyze xz-rotation
@@ -65,21 +67,35 @@ namespace ArizonaSunshine2_bhaptics
             // No tuple returns available in .NET < 4.0, so this is the easiest quickfix
             return new KeyValuePair<float, float>(myRotation, hitShift);
         }
-        /*
-        Vector3 hitPosition = zombie.Position;
-        Transform playerPosition = __instance.Transform;
-        Quaternion playerRotation = __instance.BaseRotation;
-        Quaternion headRotation = __instance.HeadRotation;
-        var angleShift = getAngleAndShift(playerPosition, hitPosition, playerRotation * headRotation);
-                if (zombie.Locomotion.IsCrawling)
-                {
-                    tactsuitVr.PlaybackHaptics("ExplosionFeet");
-                    tactsuitVr.PlayBackHit("Slash", angleShift.Key, -0.5f);
-                    return;
-                }
-        tactsuitVr.PlayBackHit("Slash", angleShift.Key, angleShift.Value);
-        */
 
+
+        [HarmonyPatch(typeof(ClientPlayerHealthModule), "ApplyDamage", new Type[] { typeof(uint), typeof(uint), typeof(int), typeof(int), typeof(Il2CppSystem.Nullable<Vector3>), typeof(bool) })]
+        public class bhaptics_Damage
+        {
+            [HarmonyPostfix]
+            public static void Postfix(ClientPlayerHealthModule __instance, int hitBoneIndex, Il2CppSystem.Nullable<Vector3> hitOrigin, bool isKilled)
+            {
+                if (isKilled) tactsuitVr.StopThreads();
+                if (__instance.HealthValue < __instance.MaxHealth * 0.25f) tactsuitVr.StartHeartBeat();
+                else tactsuitVr.StopHeartBeat();
+                Vector3 hitPosition = hitOrigin.Value;
+                Vector3 playerPosition = __instance.transformModule.HeadPosition;
+                Quaternion playerRotation = __instance.transformModule.ChestRotation;
+                var angleShift = getAngleAndShift(playerPosition, hitPosition, playerRotation);
+                tactsuitVr.PlayBackHit("Slash", angleShift.Key, angleShift.Value);
+            }
+        }
+
+        [HarmonyPatch(typeof(ClientPlayerHealthModule), "ApplyHeal", new Type[] { typeof(uint), typeof(int) })]
+        public class bhaptics_Heal
+        {
+            [HarmonyPostfix]
+            public static void Postfix(ClientPlayerHealthModule __instance, uint healerId, int healAmountPrecise)
+            {
+                if (__instance.HealthValue >= __instance.MaxHealth * 0.25f) tactsuitVr.StopHeartBeat();
+                tactsuitVr.PlaybackHaptics("Healing");
+            }
+        }
 
         [HarmonyPatch(typeof(ProjectileShootStrategyBehaviourData), "PlayShootHapticsForHand", new Type[] { typeof(AZS2Hand) })]
         public class bhaptics_Recoil
@@ -87,13 +103,60 @@ namespace ArizonaSunshine2_bhaptics
             [HarmonyPostfix]
             public static void Postfix(ProjectileShootStrategyBehaviourData __instance, AZS2Hand hand)
             {
-                string weapon = "Pistol";
-                if (__instance.shootStrategy.projectilesPerBurst > 1) weapon = "Shotgun";
-                bool isRightHand = (hand.IsRightHand);
-                tactsuitVr.Recoil(weapon, isRightHand);
+                if (__instance.shootStrategy.item.IsGrabbedLocally)
+                {
+                    string weapon = "Pistol";
+                    if (__instance.shootStrategy.hasSpreadPattern) weapon = "Shotgun";
+                    bool isRightHand = (hand.IsRightHand);
+                    tactsuitVr.Recoil(weapon, isRightHand);
+                }
             }
         }
 
-
+        /*
+        [HarmonyPatch(typeof(ExplosionHelper), "ApplySplashDamage")]
+        public class bhaptics_Explosion
+        {
+            [HarmonyPostfix]
+            public static void Postfix(float damage)
+            {
+                tactsuitVr.PlaybackHaptics("ExplosionBelly");
+                tactsuitVr.PlaybackHaptics("ExplosionFeet");
+            }
+        }
+        */
+        
+        [HarmonyPatch(typeof(HolsterHandleSlotBehaviour), "HandleOnInteractableRemovedEvent")]
+        public class bhaptics_HandleOnInteractableRemovedEvent
+        {
+            [HarmonyPostfix]
+            public static void Postfix(HolsterHandleSlotBehaviour __instance)
+            {
+                tactsuitVr.PlaybackHaptics("HolsterRemove" + __instance.slotType.ToString());
+            }
+        }
+        [HarmonyPatch(typeof(HolsterHandleSlotBehaviour), "OnInteractableInserted")]
+        public class bhaptics_OnInteractableInserted
+        {
+            [HarmonyPostfix]
+            public static void Postfix(HolsterHandleSlotBehaviour __instance)
+            {
+                tactsuitVr.PlaybackHaptics("HolsterInsert" + __instance.slotType.ToString());
+            }
+        }
+        
+        [HarmonyPatch(typeof(AmmoPouchResourceViewBehaviour), "HandleOnResourceValueChanged")]
+        public class bhaptics_HandleOnResourceValueChanged
+        {
+            [HarmonyPostfix]
+            public static void Postfix(AmmoPouchResourceViewBehaviour __instance, uint resourceId, uint oldValue, uint newValue)
+            {
+                tactsuitVr.LOG("RESSOURCE " + resourceId + " " + oldValue + " " + newValue);
+                if (oldValue != newValue)
+                {
+                    tactsuitVr.PlaybackHaptics("HolsterInsertChest");
+                }
+            }
+        }
     }
 }
