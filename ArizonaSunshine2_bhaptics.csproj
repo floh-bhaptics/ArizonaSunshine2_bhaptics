@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <BaseOutputPath>bin\</BaseOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>F:\SteamLibrary\steamapps\common\Arizona Sunshine 2\MelonLoader\net6\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bhaptics.Tact">
+      <HintPath>Bhaptics.Tact.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Il2CppClient">
+      <HintPath>F:\SteamLibrary\steamapps\common\Arizona Sunshine 2\MelonLoader\Il2CppAssemblies\Il2CppClient.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Il2CppShared">
+      <HintPath>F:\SteamLibrary\steamapps\common\Arizona Sunshine 2\MelonLoader\Il2CppAssemblies\Il2CppShared.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MelonLoader">
+      <HintPath>F:\SteamLibrary\steamapps\common\Arizona Sunshine 2\MelonLoader\net6\MelonLoader.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>F:\SteamLibrary\steamapps\common\Arizona Sunshine 2\MelonLoader\Il2CppAssemblies\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>F:\SteamLibrary\steamapps\common\Arizona Sunshine 2\MelonLoader\Il2CppAssemblies\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="XCOPY &quot;$(SolutionDir)bhaptics_library.dll&quot; &quot;$(TargetDir)&quot; /Y&#xD;&#xA;XCOPY &quot;$(TargetDir)*.dll&quot; &quot;F:\SteamLibrary\steamapps\common\Arizona Sunshine 2\Mods\&quot; /Y" />
+  </Target>
+
+</Project>
