@@ -28,7 +28,8 @@ namespace ArizonaSunshine2_bhaptics
             public static void Postfix(ProjectileShootStrategyBehaviourData __instance, AZS2Hand hand)
             {
                 string weapon = "Pistol";
-                if (__instance.shootStrategy.projectilesPerBurst > 1) weapon = "Shotgun";
+                //tactsuitVr.LOG("Fire: " + __instance.shootFeatureData.gunMeshDataID.ToString() + " " + __instance.shootStrategy.FiringMode.ToString() + " " + __instance.shootStrategy.bulletInChamberCooldownDuration.ToString() + " " + __instance.shootStrategy.hasSpreadPattern.ToString() + " " + __instance.shootStrategy.spreadAngle.ToString());
+                if (__instance.shootStrategy.hasSpreadPattern) weapon = "Shotgun";
                 bool isRightHand = (hand.IsRightHand);
                 tactsuitVr.Recoil(weapon, isRightHand);
             }
