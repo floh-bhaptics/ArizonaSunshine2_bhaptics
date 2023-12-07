@@ -9,6 +9,7 @@ using Il2CppVertigo.Interactables;
 using Il2CppVertigo.ECS;
 using Il2CppVertigo;
 using System.Reflection.Metadata;
+using System.Numerics;
 
 [assembly: MelonInfo(typeof(ArizonaSunshine2_bhaptics.ArizonaSunshine2_bhaptics), "ArizonaSunshine2_bhaptics", "1.0.0", "Astien & Florian Fahrenberger")]
 [assembly: MelonGame("Vertigo Games", "ArizonaSunshine2")]
@@ -130,10 +131,10 @@ namespace ArizonaSunshine2_bhaptics
         {
             [HarmonyPostfix]
             public static void Postfix(ClientExplosiveItemFeature __instance)
-            {                
+            {
                 tactsuitVr.PlaybackHaptics("ExplosionBelly");
                 tactsuitVr.PlaybackHaptics("ExplosionFeet");
-                tactsuitVr.PlaybackHaptics("ExplosionFace");                
+                tactsuitVr.PlaybackHaptics("ExplosionFace");
             }
         }
 
@@ -142,7 +143,7 @@ namespace ArizonaSunshine2_bhaptics
         {
             [HarmonyPostfix]
             public static void Postfix(
-                HolsterHandleSlotBehaviour __instance, 
+                HolsterHandleSlotBehaviour __instance,
                 InteractableSlot<InteractableHandle> slot,
                   InteractableHandle handle)
             {
@@ -173,7 +174,7 @@ namespace ArizonaSunshine2_bhaptics
             }
         }
         */
-        
+
         [HarmonyPatch(typeof(AmmoPouchResourceViewBehaviour), "HandleOnResourceValueChanged")]
         public class bhaptics_HandleOnResourceValueChanged
         {
@@ -213,7 +214,7 @@ namespace ArizonaSunshine2_bhaptics
                 }
             }
         }
-        
+
         [HarmonyPatch(typeof(AmmoItemFeatureBehaviourData), "HandleOnGrabbedEvent")]
         public class bhaptics_HandleOnGrabbedEvent
         {
