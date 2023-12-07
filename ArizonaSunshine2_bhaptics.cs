@@ -8,8 +8,6 @@ using Il2CppVertigo.VRShooter;
 using Il2CppVertigo.Interactables;
 using Il2CppVertigo.ECS;
 using Il2CppVertigo;
-using System.Reflection.Metadata;
-using System.Numerics;
 
 [assembly: MelonInfo(typeof(ArizonaSunshine2_bhaptics.ArizonaSunshine2_bhaptics), "ArizonaSunshine2_bhaptics", "1.0.0", "Astien & Florian Fahrenberger")]
 [assembly: MelonGame("Vertigo Games", "ArizonaSunshine2")]
