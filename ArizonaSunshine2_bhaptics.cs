@@ -7,6 +7,8 @@ using static MelonLoader.MelonLogger;
 using Il2CppVertigo.Interactables;
 using Il2CppVertigo;
 using Il2CppVertigo.VRShooter;
+using Il2Cpp;
+using Il2CppVertigo.AZS2;
 
 [assembly: MelonInfo(typeof(ArizonaSunshine2_bhaptics.ArizonaSunshine2_bhaptics), "ArizonaSunshine2_bhaptics", "1.0.0", "Astien & Florian Fahrenberger")]
 [assembly: MelonGame("Vertigo Games", "ArizonaSunshine2")]
@@ -77,8 +79,12 @@ namespace ArizonaSunshine2_bhaptics
             [HarmonyPostfix]
             public static void Postfix(ClientPlayerHealthModule __instance, int hitBoneIndex, Il2CppSystem.Nullable<Vector3> hitOrigin, bool isKilled)
             {
-                if (isKilled) tactsuitVr.StopThreads();
-                if (__instance.HealthValue < __instance.MaxHealth * 0.25f) tactsuitVr.StartHeartBeat();
+                if (isKilled)
+                {
+                    tactsuitVr.StopThreads();
+                    tactsuitVr.PlaybackHaptics("HeartBeatDeath");
+                }
+                if (__instance.HealthValue < __instance.MaxHealth * 0.25f && __instance.HealthValue > 0) tactsuitVr.StartHeartBeat();
                 else tactsuitVr.StopHeartBeat();
                 Vector3 hitPosition = hitOrigin.Value;
                 Vector3 playerPosition = __instance.transformModule.HeadPosition;
@@ -116,19 +122,18 @@ namespace ArizonaSunshine2_bhaptics
             }
         }
 
-        /*
-        [HarmonyPatch(typeof(ExplosionHelper), "ApplySplashDamage")]
-        public class bhaptics_Explosion
+        [HarmonyPatch(typeof(ClientExplosiveItemFeature), "Explode")]
+        public class bhaptics_ClientExplosiveItemFeature
         {
             [HarmonyPostfix]
-            public static void Postfix(float damage)
+            public static void Postfix(ClientExplosiveItemFeature __instance)
             {
                 tactsuitVr.PlaybackHaptics("ExplosionBelly");
                 tactsuitVr.PlaybackHaptics("ExplosionFeet");
+                tactsuitVr.PlaybackHaptics("ExplosionFace");                
             }
         }
-        */
-        
+
         [HarmonyPatch(typeof(HolsterHandleSlotBehaviour), "HandleOnInteractableRemovedEvent")]
         public class bhaptics_HandleOnInteractableRemovedEvent
         {
