@@ -24,6 +24,8 @@ namespace MyBhapticsTactsuit
         // dictionary of all feedback patterns found in the bHaptics directory
         public Dictionary<String, FileInfo> FeedbackMap = new Dictionary<String, FileInfo>();
 
+        public int heartbeatCount = 0;
+
         public void HeartBeatFunc()
         {
             while (true)
@@ -31,6 +33,11 @@ namespace MyBhapticsTactsuit
                 // Check if reset event is active
                 HeartBeat_mrse.WaitOne();
                 PlaybackHaptics("HeartBeat");
+                if (heartbeatCount > 15)
+                {
+                    StopHeartBeat();
+                }
+                heartbeatCount++;
                 Thread.Sleep(600);
             }
         }
@@ -121,6 +128,7 @@ namespace MyBhapticsTactsuit
         public void StopHeartBeat()
         {
             HeartBeat_mrse.Reset();
+            heartbeatCount = 0;
         }
 
         public bool IsPlaying(String effect)

@@ -4,11 +4,11 @@ using UnityEngine;
 using HarmonyLib;
 using Il2CppVertigo.AZS2.Client;
 using static MelonLoader.MelonLogger;
-using Il2CppVertigo.Interactables;
-using Il2CppVertigo;
 using Il2CppVertigo.VRShooter;
-using Il2Cpp;
-using Il2CppVertigo.AZS2;
+using Il2CppVertigo.Interactables;
+using Il2CppVertigo.ECS;
+using Il2CppVertigo;
+using System.Reflection.Metadata;
 
 [assembly: MelonInfo(typeof(ArizonaSunshine2_bhaptics.ArizonaSunshine2_bhaptics), "ArizonaSunshine2_bhaptics", "1.0.0", "Astien & Florian Fahrenberger")]
 [assembly: MelonGame("Vertigo Games", "ArizonaSunshine2")]
@@ -19,7 +19,6 @@ namespace ArizonaSunshine2_bhaptics
     public class ArizonaSunshine2_bhaptics : MelonMod
     {
         public static TactsuitVR tactsuitVr = null!;
-        public static bool twoHanded = false;
 
         public override void OnInitializeMelon()
         {
@@ -79,6 +78,8 @@ namespace ArizonaSunshine2_bhaptics
             [HarmonyPostfix]
             public static void Postfix(ClientPlayerHealthModule __instance, int hitBoneIndex, Il2CppSystem.Nullable<Vector3> hitOrigin, bool isKilled)
             {
+                if (!__instance.identityModule.IsLocal) return;
+
                 if (isKilled)
                 {
                     tactsuitVr.StopThreads();
@@ -101,6 +102,8 @@ namespace ArizonaSunshine2_bhaptics
             [HarmonyPostfix]
             public static void Postfix(ClientPlayerHealthModule __instance, uint healerId, int healAmountPrecise)
             {
+                if (!__instance.identityModule.IsLocal) return;
+
                 if (__instance.HealthValue >= __instance.MaxHealth * 0.25f) tactsuitVr.StopHeartBeat();
                 tactsuitVr.PlaybackHaptics("Healing");
             }
@@ -127,7 +130,7 @@ namespace ArizonaSunshine2_bhaptics
         {
             [HarmonyPostfix]
             public static void Postfix(ClientExplosiveItemFeature __instance)
-            {
+            {                
                 tactsuitVr.PlaybackHaptics("ExplosionBelly");
                 tactsuitVr.PlaybackHaptics("ExplosionFeet");
                 tactsuitVr.PlaybackHaptics("ExplosionFace");                
@@ -138,20 +141,38 @@ namespace ArizonaSunshine2_bhaptics
         public class bhaptics_HandleOnInteractableRemovedEvent
         {
             [HarmonyPostfix]
-            public static void Postfix(HolsterHandleSlotBehaviour __instance)
+            public static void Postfix(
+                HolsterHandleSlotBehaviour __instance, 
+                InteractableSlot<InteractableHandle> slot,
+                  InteractableHandle handle)
             {
-                tactsuitVr.PlaybackHaptics("HolsterRemove" + __instance.slotType.ToString());
+                if (PawnUtils.IsLocalPawnSlot(handle.Slot))
+                {
+                    tactsuitVr.PlaybackHaptics("HolsterRemove" + __instance.slotType.ToString());
+                }
             }
         }
+
+        /*
+         * As this is triggers when weapons swaps side and very often, I don't think it is relevant.
+         * 
         [HarmonyPatch(typeof(HolsterHandleSlotBehaviour), "OnInteractableInserted")]
         public class bhaptics_OnInteractableInserted
         {
             [HarmonyPostfix]
-            public static void Postfix(HolsterHandleSlotBehaviour __instance)
+            public static void Postfix(
+                HolsterHandleSlotBehaviour __instance, 
+                InteractableSlot<InteractableHandle> slot, 
+                InteractableHandle handle)
             {
-                tactsuitVr.PlaybackHaptics("HolsterInsert" + __instance.slotType.ToString());
+                tactsuitVr.LOG("Holster INSERT local ? " + PawnUtils.IsLocalPawnSlot(slot.Interactable.Slot));
+                if (PawnUtils.IsLocalPawnSlot(handle.Slot))
+                {
+                    tactsuitVr.PlaybackHaptics("HolsterInsert" + __instance.slotType.ToString());
+                }
             }
         }
+        */
         
         [HarmonyPatch(typeof(AmmoPouchResourceViewBehaviour), "HandleOnResourceValueChanged")]
         public class bhaptics_HandleOnResourceValueChanged
@@ -172,17 +193,23 @@ namespace ArizonaSunshine2_bhaptics
             [HarmonyPostfix]
             public static void Postfix(DogPetHandleBehaviour __instance, AZS2Hand hand)
             {
-                if (hand.IsRightHand)
+                Entity ent = PawnUtils.GetPawnForHand(hand);
+                IInteractableSlot slot = PawnUtils.GetSlotForHand(ent, hand);
+
+                if (PawnUtils.IsLocalHand(slot))
                 {
-                    tactsuitVr.PlaybackHaptics("RecoilHands_R", 0.25f);
-                    tactsuitVr.PlaybackHaptics("RecoilPistolVest_R", 0.25f);
-                    tactsuitVr.PlaybackHaptics("RecoilArms_R", 0.25f);
-                }
-                else
-                {
-                    tactsuitVr.PlaybackHaptics("RecoilHands_L", 0.25f);
-                    tactsuitVr.PlaybackHaptics("RecoilPistolVest_L", 0.25f);
-                    tactsuitVr.PlaybackHaptics("RecoilArms_L", 0.25f);
+                    if (hand.IsRightHand)
+                    {
+                        tactsuitVr.PlaybackHaptics("RecoilHands_R", 0.25f);
+                        tactsuitVr.PlaybackHaptics("RecoilPistolVest_R", 0.25f);
+                        tactsuitVr.PlaybackHaptics("RecoilArms_R", 0.25f);
+                    }
+                    else
+                    {
+                        tactsuitVr.PlaybackHaptics("RecoilHands_L", 0.25f);
+                        tactsuitVr.PlaybackHaptics("RecoilPistolVest_L", 0.25f);
+                        tactsuitVr.PlaybackHaptics("RecoilArms_L", 0.25f);
+                    }
                 }
             }
         }
@@ -191,17 +218,20 @@ namespace ArizonaSunshine2_bhaptics
         public class bhaptics_HandleOnGrabbedEvent
         {
             [HarmonyPostfix]
-            public static void Postfix(AmmoItemFeatureBehaviourData __instance, Hand hand)
+            public static void Postfix(AmmoItemFeatureBehaviourData __instance, Entity pawn, Hand hand)
             {
-                if (hand.IsRightHand)
+                if (PawnUtils.IsLocalPawnSlot(PawnUtils.GetSlotForHand(pawn, hand)))
                 {
-                    tactsuitVr.PlaybackHaptics("GrabItemVestRight");
-                    tactsuitVr.PlaybackHaptics("GrabItemArmsRight");
-                }
-                else
-                {
-                    tactsuitVr.PlaybackHaptics("GrabItemVestLeft");
-                    tactsuitVr.PlaybackHaptics("GrabItemArmsLeft");
+                    if (hand.IsRightHand)
+                    {
+                        tactsuitVr.PlaybackHaptics("GrabItemVestRight");
+                        tactsuitVr.PlaybackHaptics("GrabItemArmsRight");
+                    }
+                    else
+                    {
+                        tactsuitVr.PlaybackHaptics("GrabItemVestLeft");
+                        tactsuitVr.PlaybackHaptics("GrabItemArmsLeft");
+                    }
                 }
             }
         }
