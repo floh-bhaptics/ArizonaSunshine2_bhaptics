@@ -156,9 +156,6 @@ namespace ArizonaSunshine2_bhaptics
             }
         }
 
-        /*
-         * As this is triggers when weapons swaps side and very often, I don't think it is relevant.
-         * 
         [HarmonyPatch(typeof(HolsterHandleSlotBehaviour), "OnInteractableInserted")]
         public class bhaptics_OnInteractableInserted
         {
@@ -168,14 +165,12 @@ namespace ArizonaSunshine2_bhaptics
                 InteractableSlot<InteractableHandle> slot, 
                 InteractableHandle handle)
             {
-                tactsuitVr.LOG("Holster INSERT local ? " + PawnUtils.IsLocalPawnSlot(slot.Interactable.Slot));
-                if (PawnUtils.IsLocalPawnSlot(handle.Slot))
+                if (PawnUtils.IsLocalPawnSlot(__instance.slot))
                 {
                     tactsuitVr.PlaybackHaptics("HolsterInsert" + __instance.slotType.ToString());
                 }
             }
         }
-        */
 
         [HarmonyPatch(typeof(AmmoPouchResourceViewBehaviour), "HandleOnResourceValueChanged")]
         public class bhaptics_HandleOnResourceValueChanged
