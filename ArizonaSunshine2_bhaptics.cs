@@ -9,7 +9,7 @@ using Il2CppVertigo.Interactables;
 using Il2CppVertigo.ECS;
 using Il2CppVertigo;
 
-[assembly: MelonInfo(typeof(ArizonaSunshine2_bhaptics.ArizonaSunshine2_bhaptics), "ArizonaSunshine2_bhaptics", "1.1.0", "Astien & Florian Fahrenberger")]
+[assembly: MelonInfo(typeof(ArizonaSunshine2_bhaptics.ArizonaSunshine2_bhaptics), "ArizonaSunshine2_bhaptics", "1.1.1", "Astien & Florian Fahrenberger")]
 [assembly: MelonGame("Vertigo Games", "ArizonaSunshine2")]
 
 
@@ -199,15 +199,11 @@ namespace ArizonaSunshine2_bhaptics
                 {
                     if (hand.IsRightHand)
                     {
-                        tactsuitVr.PlaybackHaptics("RecoilHands_R", 0.25f);
-                        tactsuitVr.PlaybackHaptics("RecoilPistolVest_R", 0.25f);
-                        tactsuitVr.PlaybackHaptics("RecoilArms_R", 0.25f);
+                        tactsuitVr.PlaybackHaptics("PetBuddy_R");
                     }
                     else
                     {
-                        tactsuitVr.PlaybackHaptics("RecoilHands_L", 0.25f);
-                        tactsuitVr.PlaybackHaptics("RecoilPistolVest_L", 0.25f);
-                        tactsuitVr.PlaybackHaptics("RecoilArms_L", 0.25f);
+                        tactsuitVr.PlaybackHaptics("PetBuddy_L");
                     }
                 }
             }
@@ -223,13 +219,11 @@ namespace ArizonaSunshine2_bhaptics
                 {
                     if (hand.IsRightHand)
                     {
-                        tactsuitVr.PlaybackHaptics("GrabItemVestRight");
-                        tactsuitVr.PlaybackHaptics("GrabItemArmsRight");
+                        tactsuitVr.PlaybackHaptics("GrabItem_R");
                     }
                     else
                     {
-                        tactsuitVr.PlaybackHaptics("GrabItemVestLeft");
-                        tactsuitVr.PlaybackHaptics("GrabItemArmsLeft");
+                        tactsuitVr.PlaybackHaptics("GrabItem_L");
                     }
                 }
             }
