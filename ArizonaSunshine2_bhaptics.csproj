@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>F:\SteamLibrary\steamapps\common\Arizona Sunshine 2\MelonLoader\net6\0Harmony.dll</HintPath>
+      <HintPath>C:\GAMES\Arizona Sunshine 2\MelonLoader\net6\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Bhaptics.Tact">
@@ -17,45 +17,41 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Il2CppClient">
-      <HintPath>F:\SteamLibrary\steamapps\common\Arizona Sunshine 2\MelonLoader\Il2CppAssemblies\Il2CppClient.dll</HintPath>
+      <HintPath>C:\GAMES\Arizona Sunshine 2\MelonLoader\Il2CppAssemblies\Il2CppClient.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Il2CppInterop.Runtime">
-      <HintPath>F:\SteamLibrary\steamapps\common\Arizona Sunshine 2\MelonLoader\net6\Il2CppInterop.Runtime.dll</HintPath>
+      <HintPath>C:\GAMES\Arizona Sunshine 2\MelonLoader\net6\Il2CppInterop.Runtime.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Il2Cppmscorlib">
-      <HintPath>F:\SteamLibrary\steamapps\common\Arizona Sunshine 2\MelonLoader\Il2CppAssemblies\Il2Cppmscorlib.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Il2CppSerializableTO">
-      <HintPath>F:\SteamLibrary\steamapps\common\Arizona Sunshine 2\MelonLoader\Il2CppAssemblies\Il2CppSerializableTO.dll</HintPath>
+      <HintPath>C:\GAMES\Arizona Sunshine 2\MelonLoader\Il2CppAssemblies\Il2Cppmscorlib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Il2CppShared">
-      <HintPath>F:\SteamLibrary\steamapps\common\Arizona Sunshine 2\MelonLoader\Il2CppAssemblies\Il2CppShared.dll</HintPath>
+      <HintPath>C:\GAMES\Arizona Sunshine 2\MelonLoader\Il2CppAssemblies\Il2CppShared.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Il2CppVertigo.Core">
-      <HintPath>F:\SteamLibrary\steamapps\common\Arizona Sunshine 2\MelonLoader\Il2CppAssemblies\Il2CppVertigo.Core.dll</HintPath>
+      <HintPath>C:\GAMES\Arizona Sunshine 2\MelonLoader\Il2CppAssemblies\Il2CppVertigo.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MelonLoader">
-      <HintPath>F:\SteamLibrary\steamapps\common\Arizona Sunshine 2\MelonLoader\net6\MelonLoader.dll</HintPath>
+      <HintPath>C:\GAMES\Arizona Sunshine 2\MelonLoader\net6\MelonLoader.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>F:\SteamLibrary\steamapps\common\Arizona Sunshine 2\MelonLoader\Il2CppAssemblies\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>C:\GAMES\Arizona Sunshine 2\MelonLoader\Il2CppAssemblies\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>F:\SteamLibrary\steamapps\common\Arizona Sunshine 2\MelonLoader\Il2CppAssemblies\UnityEngine.PhysicsModule.dll</HintPath>
+      <HintPath>C:\GAMES\Arizona Sunshine 2\MelonLoader\Il2CppAssemblies\UnityEngine.PhysicsModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="XCOPY &quot;$(SolutionDir)bhaptics_library.dll&quot; &quot;$(TargetDir)&quot; /Y&#xD;&#xA;XCOPY &quot;$(TargetDir)*.dll&quot; &quot;F:\SteamLibrary\steamapps\common\Arizona Sunshine 2\Mods\&quot; /Y" />
+    <Exec Command="XCOPY &quot;$(SolutionDir)bhaptics_library.dll&quot; &quot;$(TargetDir)&quot; /Y&#xD;&#xA;XCOPY &quot;$(TargetDir)*.dll&quot; &quot;C:\GAMES\Arizona Sunshine 2\Mods\&quot; /Y" />
   </Target>
 
 </Project>
