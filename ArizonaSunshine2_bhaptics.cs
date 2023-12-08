@@ -9,7 +9,7 @@ using Il2CppVertigo.Interactables;
 using Il2CppVertigo.ECS;
 using Il2CppVertigo;
 
-[assembly: MelonInfo(typeof(ArizonaSunshine2_bhaptics.ArizonaSunshine2_bhaptics), "ArizonaSunshine2_bhaptics", "1.0.0", "Astien & Florian Fahrenberger")]
+[assembly: MelonInfo(typeof(ArizonaSunshine2_bhaptics.ArizonaSunshine2_bhaptics), "ArizonaSunshine2_bhaptics", "1.1.1", "Astien & Florian Fahrenberger")]
 [assembly: MelonGame("Vertigo Games", "ArizonaSunshine2")]
 
 
@@ -84,7 +84,11 @@ namespace ArizonaSunshine2_bhaptics
                     tactsuitVr.StopThreads();
                     tactsuitVr.PlaybackHaptics("HeartBeatDeath");
                 }
-                if (__instance.HealthValue < __instance.MaxHealth * 0.25f && __instance.HealthValue > 0) tactsuitVr.StartHeartBeat();
+                if (__instance.HealthValue > 0f)
+                {
+                    if (__instance.HealthValue < __instance.MaxHealth * 0.25f && __instance.HealthValue > 0) tactsuitVr.StartHeartBeat();
+                    else tactsuitVr.StopHeartBeat();
+                }
                 else tactsuitVr.StopHeartBeat();
                 Vector3 hitPosition = hitOrigin.Value;
                 Vector3 playerPosition = __instance.transformModule.HeadPosition;
@@ -194,15 +198,11 @@ namespace ArizonaSunshine2_bhaptics
                 {
                     if (hand.IsRightHand)
                     {
-                        tactsuitVr.PlaybackHaptics("RecoilHands_R", 0.25f);
-                        tactsuitVr.PlaybackHaptics("RecoilPistolVest_R", 0.25f);
-                        tactsuitVr.PlaybackHaptics("RecoilArms_R", 0.25f);
+                        tactsuitVr.PlaybackHaptics("PetBuddy_R");
                     }
                     else
                     {
-                        tactsuitVr.PlaybackHaptics("RecoilHands_L", 0.25f);
-                        tactsuitVr.PlaybackHaptics("RecoilPistolVest_L", 0.25f);
-                        tactsuitVr.PlaybackHaptics("RecoilArms_L", 0.25f);
+                        tactsuitVr.PlaybackHaptics("PetBuddy_L");
                     }
                 }
             }
@@ -218,13 +218,11 @@ namespace ArizonaSunshine2_bhaptics
                 {
                     if (hand.IsRightHand)
                     {
-                        tactsuitVr.PlaybackHaptics("GrabItemVestRight");
-                        tactsuitVr.PlaybackHaptics("GrabItemArmsRight");
+                        tactsuitVr.PlaybackHaptics("GrabItem_R");
                     }
                     else
                     {
-                        tactsuitVr.PlaybackHaptics("GrabItemVestLeft");
-                        tactsuitVr.PlaybackHaptics("GrabItemArmsLeft");
+                        tactsuitVr.PlaybackHaptics("GrabItem_L");
                     }
                 }
             }
