@@ -84,7 +84,11 @@ namespace ArizonaSunshine2_bhaptics
                     tactsuitVr.StopThreads();
                     tactsuitVr.PlaybackHaptics("HeartBeatDeath");
                 }
-                if (__instance.HealthValue < __instance.MaxHealth * 0.25f && __instance.HealthValue > 0) tactsuitVr.StartHeartBeat();
+                if (__instance.HealthValue > 0f)
+                {
+                    if (__instance.HealthValue < __instance.MaxHealth * 0.25f && __instance.HealthValue > 0) tactsuitVr.StartHeartBeat();
+                    else tactsuitVr.StopHeartBeat();
+                }
                 else tactsuitVr.StopHeartBeat();
                 Vector3 hitPosition = hitOrigin.Value;
                 Vector3 playerPosition = __instance.transformModule.HeadPosition;
